@@ -177,6 +177,7 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
             return s;
         }
 
+
         /// <summary>
         ///     Generates a list of type T form spliting the source string using the delimiter.
         /// </summary>
