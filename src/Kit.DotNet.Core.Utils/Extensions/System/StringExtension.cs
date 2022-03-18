@@ -11,17 +11,8 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
     /// <summary>
     /// Utility extension for String objects.
     /// </summary>
-    public static class StringExtensions
+    public static class StringExtension
     {
-        #region "Constants"
-
-        /// <summary>
-        ///     Default text length
-        /// </summary>
-        public const short DefaultRecortaTexto = 20;
-
-        #endregion
-
         #region "Static Methods"
 
         /// <summary>
@@ -54,7 +45,10 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
         /// <param name="ignoreCase"><c>true</c> if search should ignore capitalization; <c>false</c> case sensitive search.</param>
         /// <returns><c>true</c> if s contains search string; <c>false</c> any othe case.</returns>
         public static bool Contains(this string s, string search, bool ignoreCase)
-            => !string.IsNullOrEmpty(s) && s.IndexOf(value: search, comparisonType: ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) != -1;
+        {
+            ValidateString(s, search);
+            return !string.IsNullOrEmpty(s) && s.IndexOf(value: search, comparisonType: ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) != -1;
+        }
 
         /// <summary>
         ///     Checks if a normalized string is contained within another normalized string
@@ -64,27 +58,10 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
         /// <param name="ignoreCase"><c>true</c> if search should ignore capitalization; <c>false</c> case sensitive search.</param>
         /// <returns><c>true</c> if s contains search string; <c>false</c> any othe case.</returns>
         public static bool ContainsNormalized(this string s, string search, bool ignoreCase = false)
-            => !string.IsNullOrEmpty(s) && s.ToNormalized().Contains(search: search.ToNormalized(), ignoreCase: ignoreCase);
-
-        /// <summary>
-        ///     Returns a default string if source string is null or empty
-        /// </summary>
-        /// <param name="s">String type object</param>
-        /// <param name="defaultValue">String type object.</param>
-        /// <returns>String type object</returns>
-        public static string DefaultIfEmpty(this string s, string defaultValue)
-            => !string.IsNullOrEmpty(s) ? s : defaultValue;
-
-        /// <summary>
-        ///     Returns a default string if source type is null or empty
-        /// </summary>
-        /// <typeparam name="TValue">Data type for source.</typeparam>
-        /// <param name="value">TValue type object.</param>
-        /// <param name="defaultValue">String type object.</param>
-        /// <returns>Tvalue type object if source is not empty, any other case String type object</returns>
-        public static string? DefaultIfEmpty<TValue>(this TValue value, string defaultValue)
-            => !Equals(value, default(TValue)) ? value?.ToString() : defaultValue;
-
+        {
+            ValidateString(s, search);
+            return !string.IsNullOrEmpty(s) && s.ToNormalized().Contains(search: search.ToNormalized(), ignoreCase: ignoreCase);
+        }
 
         /// <summary>
         ///     Normalizes a string to be used as HTML code. Substitues certain character fo HTMLENTITY equivalents.
@@ -94,7 +71,7 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
         /// <returns>String type object.</returns>
         public static string NormalizeHtml(this string s, bool useNonBreakingSpaces = false)
         {
-            if (string.IsNullOrEmpty(s))
+            if (string.IsNullOrWhiteSpace(s))
                 return s;
 
             if (useNonBreakingSpaces)
@@ -119,21 +96,6 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
             return s;
         }
 
-
-        /// <summary>
-        ///     Checks if string surpases size constrain
-        /// </summary>
-        /// <param name="cadena">String type object.</param>
-        /// <param name="maxSize">Int type object.</param>
-        /// <returns>String type object with specified max size.</returns>
-        public static string TruncateText(this string cadena, int maxSize = DefaultRecortaTexto)
-        {
-            if (maxSize == 0) return string.Empty;
-            if (maxSize >= cadena.Length) return cadena;
-
-            return cadena.Substring(0, maxSize);
-        }
-
         /// <summary>
         ///     Erases specified characters form source string.
         /// </summary>
@@ -150,9 +112,11 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
         /// <param name="parts">String type array.</param>
         /// <returns><see cref="string" /> without substrings in array.</returns>
         public static string RemoveText(this string s, params string[] parts)
-            => parts != null && parts.Length > 0
-                   ? parts.Aggregate(seed: s, func: (current, replacePart) => current.Replace(replacePart, string.Empty))
-                   : s;
+        {
+            return parts != null && parts.Length > 0
+                     ? parts.Aggregate(seed: s, func: (current, replacePart) => replacePart.Length > 0 ? current.Replace(replacePart, string.Empty) : current)
+                     : s;
+        }
 
         /// <summary>
         ///     Splits source string in chunks of specific size
@@ -171,16 +135,7 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
                                                       length: Math.Min(chunkSize, s.Length - i * chunkSize)));
         }
 
-        /// <summary>
-        /// Split string and convert to List
-        /// </summary>
-        /// <param name="s">string to split</param>
-        /// <param name="c">char for split the string</param>
-        /// <returns>a list with de blocks splited</returns>
-        public static List<string> SplitToList(this string s, char c)
-            => s.Split(c).ToList();
-
-
+       
         /// <summary>
         ///     Obtains the source enum´s field with the same name as String.
         /// </summary>
@@ -220,31 +175,6 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
             s = Regex.Replace(s, "[Ú|Ù|Ü|Û]", "U", RegexOptions.None);
 
             return s;
-        }
-
-        /// <summary>
-        ///     Converts number value to a formated string..
-        /// </summary>
-        /// <typeparam name="T">Type of input number</typeparam>
-        /// <param name="n">T type object.</param>
-        /// <returns><see cref="string" /> type object.</returns>
-        /// <exception cref="ArgumentException"> if T is not a numeric type.</exception>
-        public static string ToFileSize<T>(this T n)
-        {
-            long y = Convert.ToInt64(n);
-            if (Math.Abs(Convert.ToDouble(n) - Convert.ToDouble(y)) > 0)
-                throw new ArgumentException("Input was not an integer");
-
-            double max = 1024 * 1024 * 1024;
-            if (y >= max)
-                return string.Format("{0:0.##} GB", y / max);
-            max = 1024 * 1024;
-            if (y >= max)
-                return string.Format("{0:0.##} MB", y / max);
-            if (y >= 1024)
-                return string.Format("{0:0.##} KB", (double)y / 1024);
-
-            return string.Format("{0} bytes", y);
         }
 
         /// <summary>
