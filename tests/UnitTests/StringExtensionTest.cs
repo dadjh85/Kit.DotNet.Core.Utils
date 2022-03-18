@@ -270,6 +270,18 @@ namespace UnitTests
             List<char>? item = "abcd".ToList();
             item.First().Should().Be('a');
             item.Count().Should().Be(4);
+
+            List<string>? item2 = "a,b,c,d".ToList<string>();
+            item2?.First().Should().Be("a");
+            item2?.Count().Should().Be(4);
+
+            List<int>? item3 = "1,2,3,4".ToList<int>();
+            item3?.First().Should().Be(1);
+            item3?.Count().Should().Be(4);
+
+            List<int>? item4 = "1|2|3|4".ToList<int>("|");
+            item4?.First().Should().Be(1);
+            item4?.Count().Should().Be(4);
         }
     }
 }
