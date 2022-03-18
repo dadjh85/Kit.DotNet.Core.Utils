@@ -210,7 +210,7 @@ namespace UnitTests
         {
             "".NormalizeHtml(true).Should().Be("");
             " ".NormalizeHtml(true).Should().Be(" ");
-            string? html = null;
+            string html = null;
             html?.NormalizeHtml(true).Should().Be(null);
         }
 
@@ -226,7 +226,7 @@ namespace UnitTests
         public void when_a_string_with_null_or_empty_value_and_try_delete_a_char_of_content()
         {
             "".RemoveText('t').Should().Be("");
-            string? test = null;
+            string test = null;
             test?.RemoveText('t').Should().Be(null);
         }
 
@@ -245,7 +245,7 @@ namespace UnitTests
             "".RemoveText("te").Should().Be("");
             "".RemoveText("").Should().Be("");
             "test".RemoveText("").Should().Be("test");
-            string? test = null;
+            string test = null;
             test?.RemoveText("test").Should().Be("");
         }
 
@@ -267,21 +267,32 @@ namespace UnitTests
         [Fact]
         public void when_a_string_convert_to_list()
         {
-            List<char>? item = "abcd".ToList();
+            List<char> item = "abcd".ToList();
             item.First().Should().Be('a');
             item.Count().Should().Be(4);
 
-            List<string>? item2 = "a,b,c,d".ToList<string>();
+            List<string> item2 = "a,b,c,d".ToList<string>();
             item2?.First().Should().Be("a");
             item2?.Count().Should().Be(4);
 
-            List<int>? item3 = "1,2,3,4".ToList<int>();
+            List<int> item3 = "1,2,3,4".ToList<int>();
             item3?.First().Should().Be(1);
             item3?.Count().Should().Be(4);
 
-            List<int>? item4 = "1|2|3|4".ToList<int>("|");
+            List<int> item4 = "1|2|3|4".ToList<int>("|");
             item4?.First().Should().Be(1);
             item4?.Count().Should().Be(4);
+        }
+
+        [Fact]
+        public void when_a_string_with_null_or_empty_value_try_convert_to_list()
+        {
+            List<string> item = "".ToList<string>();
+            item.Should().BeNull();
+
+            string test = null;
+            List<string> item2 = test.ToList<string>();
+            item2.Should().BeNull();
         }
     }
 }
