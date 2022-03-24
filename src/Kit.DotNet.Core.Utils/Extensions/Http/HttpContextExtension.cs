@@ -18,7 +18,7 @@ namespace Kit.DotNet.Core.Utils.Extensions.Http
         {
             string result = string.Empty;
 
-            if (context.Connection.RemoteIpAddress != null)
+            if (context?.Connection?.RemoteIpAddress != null)
             {
                 result = context.Connection.RemoteIpAddress.ToString();
             }
