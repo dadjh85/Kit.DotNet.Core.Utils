@@ -4,6 +4,9 @@ using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace UnitTests
 {
@@ -294,5 +297,88 @@ namespace UnitTests
             List<string> item2 = test.ToList<string>();
             item2.Should().BeNull();
         }
+
+        [Fact]
+        public void when_a_string_convert_to_hexadecimal_to_byte_array()
+        {
+            "100".HexToByteArray().ToList().First().Should().Be(16);
+        }
+
+        [Fact]
+        public void when_a_string_of_empty_or_null_try_convert_to_hexadecimal_to_byte_array()
+        {
+            Assert.Throws<InvalidOperationException>(() => "".HexToByteArray());
+            string test = null;
+            Assert.Throws<InvalidOperationException>(() => test.HexToByteArray());
+        }
+
+        [Fact]
+        public void when_a_string_convert_to_byte_array()
+        {
+            var result = "test".ToByteArray();
+            result.ToList().First().Should().Be(116);
+            result.ToList().Last().Should().Be(116);
+            result.ToList().Count().Should().Be(4);
+            var result2 = "test".ToByteArray(Encoding.ASCII);
+            result2.ToList().First().Should().Be(116);
+            result2.ToList().Last().Should().Be(116);
+            result2.ToList().Count().Should().Be(4);
+        }
+
+        [Fact]
+        public void when_a_string_empty_or_null_try_convert_to_byte_array()
+        {
+            Assert.Throws<InvalidOperationException>(() => "".ToByteArray());
+            Assert.Throws<InvalidOperationException>(() => "".ToByteArray(Encoding.ASCII));
+            string test = null;
+            Assert.Throws<InvalidOperationException>(() => test.ToByteArray());
+            Assert.Throws<InvalidOperationException>(() => test.ToByteArray(Encoding.ASCII));
+        }
+
+        [Fact]
+        public async Task when_a_string_convert_ToStringContent()
+        {
+            StringContent stringToStringContent = "test".ToStringContent();
+            string teststring = await stringToStringContent.ReadAsStringAsync();
+            teststring.Should().Be("test");
+        }
+
+        [Fact]
+        public void when_a_string_null_or_empty_try_convert_ToStringContent()
+        {
+            Assert.Throws<InvalidOperationException>(() => "".ToStringContent());
+            string test = null;
+            Assert.Throws<InvalidOperationException>(() => test.ToStringContent());
+        }
+
+        [Fact]
+        public void when_a_string_in_base_64_convert_byte_array()
+        {
+            var array = "dGVzdA==".FromBase64ToByteArray();
+            array.ToList().First().Should().Be(116);
+            array.ToList().Last().Should().Be(116);
+            array.ToList().Count().Should().Be(4);
+        }
+
+        [Fact]
+        public void when_a_string_null_or_empty_from_base64_convert_byte_array()
+        {
+            "".FromBase64ToByteArray().Should().BeNull();
+            string test = null;
+            test.FromBase64ToByteArray().Should().BeNull();
+        }
+
+        private enum Level { Low, Medium, High }
+        
+        [Fact]
+        public void when_a_diferents_string_convert_to_value_of_enum()
+        {
+            "High".ToEnum<Level>().Should().Be(Level.High);
+            "".ToEnum<Level>().Should().Be(Level.Low);
+            string test = null;
+            test.ToEnum<Level>().Should().Be(Level.Low);
+            "test".ToEnum<Level>().Should().Be(Level.Low);
+        }
+    
     }
 }

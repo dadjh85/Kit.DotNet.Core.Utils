@@ -193,20 +193,13 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
                    : null;
 
         /// <summary>
-        ///     Converts a string containing data in Base64 format to the equivalent byte array.
-        /// </summary>
-        /// <param name="s">String containing data in Base64 format.</param>
-        /// <returns>Byte array equivalent to the value stored in the Base64 format string.</returns>
-        public static byte[]? Base64ToByteArray(this string s)
-            => !string.IsNullOrEmpty(s) ? Convert.FromBase64String(s) : default(byte[]);
-
-        /// <summary>
         ///     Converts a string containing a number in hexadecimal format to the equivalent byte array.
         /// </summary>
         /// <param name="s">String containing a number in hexadecimal format.</param>
         /// <returns>Byte array equivalent to the hexadecimal value stored in the string.</returns>
         public static byte[] HexToByteArray(this string s)
         {
+            ValidateString(s);
             int hexStringLength = s.Length / 2;
             byte[] bytes = new byte[hexStringLength];
             using (StringReader reader = new StringReader(s))
@@ -227,15 +220,10 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
         /// </param>
         /// <returns>Byte array for use in deserialization tasks.</returns>
         public static byte[] ToByteArray(this string s, Encoding? encoding = null)
-            => (encoding ?? Encoding.ASCII).GetBytes(s);
-
-        /// <summary>
-        ///     Converts a string to the equivalent UTF-8 encoded byte array for use in deserialization tasks.
-        /// </summary>
-        /// <param name="s">String to convert.</param>
-        /// <returns>Equivalent UTF-8 encoded byte array for use in deserialization tasks.</returns>
-        public static byte[] ToUtf8ByteArray(this string s)
-            => s.ToByteArray(encoding: Encoding.UTF8);
+        {
+            ValidateString(s);
+            return (encoding ?? Encoding.UTF8).GetBytes(s);
+        }
 
         /// <summary>
         ///     Converts a string to a StringContent object
@@ -250,14 +238,18 @@ namespace Kit.DotNet.Core.Utils.Extensions.System
         /// </param>
         /// <returns>StringContent object based on inserted values.</returns>
         public static StringContent ToStringContent(this string s, Encoding? encoding = null, string mediaType = "application/json")
-            => new StringContent(s, encoding ?? Encoding.UTF8, mediaType);
+        {
+            ValidateString(s);
+            return new StringContent(s, encoding ?? Encoding.UTF8, mediaType);
+        }
+
         /// <summary>
         /// Converts the specified string, which encodes the binary data as base-64 digits, to an array equivalent of
         /// unsigened 8-bit integers
         /// </summary>
         /// <param name="file">Strint to convert.</param>
         /// <returns>An array of 8-bit unsigned integers equivalent to file.</returns>
-        public static byte[]? FromBase64ToString(this string file)
+        public static byte[]? FromBase64ToByteArray(this string file)
             => !string.IsNullOrEmpty(file) ? Convert.FromBase64String(file) : null;
 
         #endregion
