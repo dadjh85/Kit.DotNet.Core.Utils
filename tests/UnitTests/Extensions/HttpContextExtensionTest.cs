@@ -10,7 +10,7 @@ namespace UnitTests.Extensions
     public class HttpContextExtensionTest
     {
         [Fact]
-        public void when_get_ip_address_of_httpContext_object()
+        public void when_get_remote_ip_address_of_httpContext_object()
         {
             var httpContext = new DefaultHttpContext()
             {
@@ -21,7 +21,7 @@ namespace UnitTests.Extensions
         }
 
         [Fact]
-        public void when_get_ip_address_of_httpContext_object_with_property_connection_null()
+        public void when_get_remote_ip_address_of_httpContext_object_with_property_connection_null()
         {
             Mock<HttpContext> httpContext = new Mock<HttpContext>();
 
@@ -29,11 +29,70 @@ namespace UnitTests.Extensions
         }
 
         [Fact]
-        public void when_get_ip_address_of_httpContext_object_with_null_value()
+        public void when_get_remote_ip_address_of_httpContext_object_with_null_value()
         {
             HttpContext httpContext = null;
 
             httpContext.GetRemoteIpAddress().Should().Be("");
+        }
+
+        [Fact]
+        public void when_get_local_ip_address_of_httpContext_object()
+        {
+            var httpContext = new DefaultHttpContext()
+            {
+                Connection = { LocalIpAddress = new IPAddress(16885952) }
+            };
+
+            httpContext.GetLocalIpAddress().Should().Be("192.168.1.1");
+        }
+
+        [Fact]
+        public void when_get_local_ip_address_of_httpContext_object_with_property_connection_null()
+        {
+            Mock<HttpContext> httpContext = new Mock<HttpContext>();
+
+            httpContext.Object.GetLocalIpAddress().Should().Be("");
+        }
+
+        [Fact]
+        public void when_get_local_ip_address_of_httpContext_object_with_null_value()
+        {
+            HttpContext httpContext = null;
+
+            httpContext.GetLocalIpAddress().Should().Be("");
+        }
+
+        [Fact]
+        public void when_get_EncodeUrl_of_httpContext()
+        {
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Path = "/localhost";
+
+            httpContext.GetEncodedUrl().Should().Be(":///localhost");
+        }
+
+        [Fact]
+        public void when_get_EncodeUrl_of_httpContext_with_null_value()
+        {
+            HttpContext httpContext = null;
+
+            httpContext.GetEncodedUrl().Should().BeNull();
+        }
+
+        [Fact]
+        public void when_get_correlationId_of_httpContext()
+        {
+            var httpContext = new DefaultHttpContext();
+            //// httpContext.Request.Headers.Add("X-Correlation-ID", "test");
+            //httpContext.Request.Headers["x-Correlation-ID"] = "10000-10000-1000";
+            ////httpContext.Request.Headers.Add("X-Correlation-ID", "10000-10000-1000");
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContext.Request.Headers["x-Correlation-ID"] = "10000-10000-1000";
+            httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            httpContext.GetTraceIdentifier().Should().Be("test");
         }
     }
 }

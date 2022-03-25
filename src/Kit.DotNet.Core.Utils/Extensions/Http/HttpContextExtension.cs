@@ -35,7 +35,7 @@ namespace Kit.DotNet.Core.Utils.Extensions.Http
         {
             string result = string.Empty;
 
-            if (context.Connection.LocalIpAddress != null)
+            if (context?.Connection?.LocalIpAddress != null)
             {
                 result = context.Connection.LocalIpAddress.ToString();
             }
@@ -48,8 +48,8 @@ namespace Kit.DotNet.Core.Utils.Extensions.Http
         /// </summary>
         /// <param name="context">HttpContext object type</param>
         /// <returns>String object type</returns>
-        public static string GetEncodedUrl(this HttpContext context)
-            => context.Request.GetEncodedUrl();
+        public static string? GetEncodedUrl(this HttpContext context)
+            => context?.Request?.GetEncodedUrl();
 
         /// <summary>
         /// Get CorrelationId of HttpContext.
@@ -60,7 +60,7 @@ namespace Kit.DotNet.Core.Utils.Extensions.Http
         {
             StringValues result;
 
-            httpContext.Response.Headers.TryGetValue("CorrelationId", out result);
+            httpContext?.Response?.Headers?.TryGetValue("CorrelationId", out result);
 
             return result;
         }
