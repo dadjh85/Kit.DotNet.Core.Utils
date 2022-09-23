@@ -8,7 +8,7 @@ using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace UnitTests
+namespace UnitTests.Extensions
 {
     public class StringExtensionTest
     {
