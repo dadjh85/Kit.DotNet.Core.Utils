@@ -79,20 +79,5 @@ namespace UnitTests.Extensions
 
             httpContext.GetEncodedUrl().Should().BeNull();
         }
-
-        [Fact]
-        public void when_get_correlationId_of_httpContext()
-        {
-            var httpContext = new DefaultHttpContext();
-            //// httpContext.Request.Headers.Add("X-Correlation-ID", "test");
-            //httpContext.Request.Headers["x-Correlation-ID"] = "10000-10000-1000";
-            ////httpContext.Request.Headers.Add("X-Correlation-ID", "10000-10000-1000");
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContext.Request.Headers["x-Correlation-ID"] = "10000-10000-1000";
-            httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
-
-            httpContext.GetTraceIdentifier().Should().Be("test");
-        }
     }
 }
